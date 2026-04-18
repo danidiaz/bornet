@@ -1,0 +1,101 @@
+cabal-version:      3.4
+name:               bornet
+version:            0.1.0.0
+-- synopsis:
+-- description:
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Daniel Díaz
+maintainer:         diaz_carrete@yahoo.com
+-- copyright:
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common options
+    ghc-options: 
+        -Wall 
+        -threaded 
+        -finfo-table-map
+        -fdistinct-constructor-tables 
+
+common language
+    default-language: GHC2024
+
+common base
+    build-depends:    base >=4.21.0.0
+
+common tests
+    build-depends:
+      tasty           ^>= 1.5,
+      tasty-hunit     ^>= 0.10,
+      transformers >= 0.5 && < 0.7,
+      containers,
+      optics-core,
+      dani-optics-dot,
+      Bornet
+
+executable bornet
+    import:           
+        options,
+        language,
+        base,
+    main-is:          Main.hs
+    build-depends:    bornet
+    hs-source-dirs:   app
+
+library
+    import:           
+        options,
+        language,
+        base
+    exposed-modules:  
+        Bornet.Prelude
+        Bornet.Model
+        Bornet.Root
+        Bornet.Sqlite
+        Bornet.Repository
+        Bornet.Repository.Sqlite
+        Bornet.Api
+        Bornet.Api.Server
+        Bornet.Api.Server.Htmx
+        Bornet.Api.WholeServer
+    build-depends:
+        cauldron >= 0.9.0.1,
+        servant,
+        servant-server,
+        lucid2,
+        dani-servant-lucid2,
+        text,
+        bytestring,
+        containers,
+        aeson,
+        dani-sqlite >= 0.1.1.0,
+        log-base,
+        http-media,
+        warp,
+        yaml,
+        resource-pool,
+        transformers,
+        http-api-data,
+        http-types,
+        unordered-containers,
+        network-uri,
+        process,
+        async,
+        filepath,
+        time,
+        dani-beans:wai,
+        dani-beans:warp,
+        dani-beans:resource-pool,
+        dani-beans:threadlocal,
+        dani-beans:jsonconf,
+        optics-core,
+        dani-optics-dot,
+    hs-source-dirs:   lib
+
+test-suite tests
+    import:           language, base, tests
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          tests.hs

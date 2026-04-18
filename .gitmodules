@@ -1,0 +1,3 @@
+[submodule "dani-beans"]
+	path = dani-beans
+	url = git@github.com:danidiaz/dani-beans.git
