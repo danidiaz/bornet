@@ -3,7 +3,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DerivingStrategies #-}
 
-module Bornet.Api.WholeServer (StaticServeConf (..), makeApplication) where
+module Bornet.Api.WholeServer (StaticServeConfig (..), makeApplication) where
 
 import Data.Aeson
 import Data.Proxy
@@ -14,13 +14,13 @@ import Servant.API
 import Servant.Server
 import Servant.Server.StaticFiles
 
-data StaticServeConf = StaticServeConf
+data StaticServeConfig = StaticServeConf
   { staticAssetsFolder :: FilePath
   }
   deriving stock (Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-makeApplication :: Server Api -> StaticServeConf -> Network.Wai.Application.Application
+makeApplication :: Server Api -> StaticServeConfig -> Network.Wai.Application.Application
 makeApplication server StaticServeConf {staticAssetsFolder} = Network.Wai.Application.MakeApplication {Network.Wai.Application.application}
   where
     staticAssetsServer = serveDirectoryWebApp staticAssetsFolder

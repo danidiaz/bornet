@@ -56,7 +56,7 @@ cauldron =
               [ val_ $ wire $ Sqlite.Bean.hoistWithLazilyAllocatedConnection Bornet.Api.Server.hoistBornetServer
               ]
           },
-      recipe @StaticServeConf $ ioEff_ $ wire $ JsonConfig.lookupSection @StaticServeConf "runner",
+      recipe @StaticServeConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @StaticServeConfig "runner",
       recipe @Application $ val_ $ Bornet.Api.WholeServer.makeApplication <$> fmap Bornet.Api.Server.unwrap arg <*> arg,
       recipe @RunnerConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @RunnerConfig "runner",
       recipe @Network.Wai.Handler.Warp.Runner.Settings $ val_ $ wire $ Network.Wai.Handler.Warp.Runner.makeSettings,
