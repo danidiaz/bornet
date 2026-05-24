@@ -18,6 +18,7 @@ import Cauldron.Managed
 -- import Data.Functor ((<&>))
 
 import Control.Exception (throwIO)
+import Control.Monad(join)
 import Data.Function ((&))
 import Data.Pool.Introspection.Bean (PoolConfig)
 import Bornet.Api (BornetLinks, makeLinks)
@@ -44,16 +45,15 @@ cauldron =
       recipe @SqlitePoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @SqlitePoolConfig "sqlite",
       recipe @PoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @PoolConfig "sqlite",
       recipe @SqlitePool $ eff_ $ wire $ \sconf pconf -> managed $ Sqlite.Bean.makeSqlitePool sconf pconf,
-      recipe @(ThreadLocal Connection) $ ioEff_ $ pure makeThreadLocal,
-      -- IO Connection |=| val_ $ readThreadLocal @Connection <$> arg,
-      recipe @(IO Connection) $ val_ $ wire $ readThreadLocal @Connection,
+      recipe @(ThreadLocal (IO Connection)) $ ioEff_ $ pure makeThreadLocal,
+      recipe @(IO Connection) $ val_ $ wire $ join . readThreadLocal @(IO Connection),
       recipe @BornetRepository $ val_ $ wire $ Bornet.Repository.Sqlite.make,
       recipe @BornetLinks $ ioEff_ $ pure makeLinks,
       recipe @BornetServer $
         Recipe
           { bare = val_ $ wire makeBornetServer,
             decos =
-              [ val_ $ wire $ Sqlite.Bean.hoistWithConnection Bornet.Api.Server.hoistBornetServer
+              [ val_ $ wire $ Sqlite.Bean.hoistWithLazilyAllocatedConnection Bornet.Api.Server.hoistBornetServer
               ]
           },
       recipe @StaticServeConf $ ioEff_ $ wire $ JsonConfig.lookupSection @StaticServeConf "runner",
