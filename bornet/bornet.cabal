@@ -60,7 +60,7 @@ library
         Bornet.Api.Server.Htmx
         Bornet.Api.WholeServer
     build-depends:
-        dani-beans:sqlite,
+        dani-beans:sqlite-pool,
         cauldron >= 0.9.0.1,
         servant,
         servant-server,

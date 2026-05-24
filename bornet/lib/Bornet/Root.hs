@@ -26,7 +26,7 @@ import Bornet.Api.Server
 import Bornet.Api.WholeServer
 import Bornet.Repository
 import Bornet.Repository.Sqlite qualified
-import Sqlite.Bean
+import Sqlite.Pool
 import JsonConfig
 import JsonConfig.YamlFile qualified
 import Log
@@ -44,7 +44,7 @@ cauldron =
       recipe @Logger $ eff_ $ pure $ managed withStdOutLogger,
       recipe @SqlitePoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @SqlitePoolConfig "sqlite",
       recipe @PoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @PoolConfig "sqlite",
-      recipe @SqlitePool $ eff_ $ wire $ \sconf pconf -> managed $ Sqlite.Bean.makeSqlitePool sconf pconf,
+      recipe @SqlitePool $ eff_ $ wire $ \sconf pconf -> managed $ Sqlite.Pool.makeSqlitePool sconf pconf,
       recipe @(ThreadLocal (IO Connection)) $ ioEff_ $ pure makeThreadLocal,
       recipe @(IO Connection) $ val_ $ wire $ join . readThreadLocal @(IO Connection),
       recipe @BornetRepository $ val_ $ wire $ Bornet.Repository.Sqlite.make,
@@ -53,7 +53,7 @@ cauldron =
         Recipe
           { bare = val_ $ wire makeBornetServer,
             decos =
-              [ val_ $ wire $ Sqlite.Bean.hoistWithLazilyAllocatedConnection Bornet.Api.Server.hoistBornetServer
+              [ val_ $ wire $ Sqlite.Pool.hoistWithLazilyAllocatedConnection Bornet.Api.Server.hoistBornetServer
               ]
           },
       recipe @StaticServeConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @StaticServeConfig "runner",
