@@ -44,23 +44,6 @@ executable bornet
     build-depends:    bornet
     hs-source-dirs:   app
 
-library sqlite
-    import:
-        options,
-        language,
-        base
-    exposed-modules:
-        Sqlite.Bean
-    build-depends:
-        aeson,
-        text,
-        dani-sqlite >= 0.1.1.0,
-        resource-pool,
-        dani-beans:resource-pool,
-        dani-beans:thread-local,
-    hs-source-dirs:   lib-sqlite
-    visibility:       public
-
 library
     import:
         options,
@@ -77,7 +60,7 @@ library
         Bornet.Api.Server.Htmx
         Bornet.Api.WholeServer
     build-depends:
-        bornet:sqlite,
+        dani-beans:sqlite,
         cauldron >= 0.9.0.1,
         servant,
         servant-server,
