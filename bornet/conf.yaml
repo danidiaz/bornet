@@ -3,4 +3,6 @@ runner:
   staticAssetsFolder: "static"
 sqlite:
   databaseFile: "db.sqlite"
-  poolSize: 10
+  pool_size: 10
+  unused_resource_ttl_seconds: 3600
+

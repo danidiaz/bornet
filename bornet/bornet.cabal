@@ -88,8 +88,8 @@ library
         dani-beans:wai,
         dani-beans:warp,
         dani-beans:resource-pool,
-        dani-beans:threadlocal,
-        dani-beans:jsonconf,
+        dani-beans:thread-local,
+        dani-beans:json-config,
         optics-core,
         dani-optics-dot,
     hs-source-dirs:   lib

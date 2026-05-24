@@ -19,18 +19,18 @@ import Cauldron.Managed
 
 import Control.Exception (throwIO)
 import Data.Function ((&))
-import Data.Pool.Introspection.Bean (PoolConf)
+import Data.Pool.Introspection.Bean (PoolConfig)
 import Bornet.Api (BornetLinks, makeLinks)
 import Bornet.Api.Server
 import Bornet.Api.WholeServer
 import Bornet.Repository
 import Bornet.Repository.Sqlite qualified
 import Bornet.Sqlite
-import JsonConf
-import JsonConf.YamlFile qualified
+import JsonConfig
+import JsonConfig.YamlFile qualified
 import Log
 import Log.Backend.StandardOutput
-import Network.Wai.Bean
+import Network.Wai.Application
 import Network.Wai.Handler.Warp.Runner
 import Sqlite (Connection)
 import ThreadLocal
@@ -38,11 +38,11 @@ import ThreadLocal
 cauldron :: Cauldron Managed
 cauldron =
   mconcat
-    [ let makeJsonConf = JsonConf.YamlFile.make $ JsonConf.YamlFile.loadYamlSettings ["conf.yaml"] [] JsonConf.YamlFile.useEnv
-       in recipe @JsonConf $ ioEff_ $ pure makeJsonConf,
+    [ let makeJsonConfig = JsonConfig.YamlFile.make $ JsonConfig.YamlFile.loadYamlSettings ["conf.yaml"] [] JsonConfig.YamlFile.useEnv
+       in recipe @JsonConfig $ ioEff_ $ pure makeJsonConfig,
       recipe @Logger $ eff_ $ pure $ managed withStdOutLogger,
-      recipe @SqlitePoolConf $ ioEff_ $ wire $ JsonConf.lookupSection @SqlitePoolConf "sqlite",
-      recipe @PoolConf $ ioEff_ $ wire $ JsonConf.lookupSection @PoolConf "sqlite",
+      recipe @SqlitePoolConf $ ioEff_ $ wire $ JsonConfig.lookupSection @SqlitePoolConf "sqlite",
+      recipe @PoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @PoolConfig "sqlite",
       recipe @SqlitePool $ eff_ $ wire $ \sconf pconf -> managed $ Bornet.Sqlite.makeSqlitePool sconf pconf,
       recipe @(ThreadLocal Connection) $ ioEff_ $ pure makeThreadLocal,
       -- IO Connection |=| val_ $ readThreadLocal @Connection <$> arg,
@@ -56,14 +56,15 @@ cauldron =
               [ val_ $ wire $ Bornet.Sqlite.hoistWithConnection Bornet.Api.Server.hoistBornetServer
               ]
           },
-      recipe @StaticServeConf $ ioEff_ $ wire $ JsonConf.lookupSection @StaticServeConf "runner",
+      recipe @StaticServeConf $ ioEff_ $ wire $ JsonConfig.lookupSection @StaticServeConf "runner",
       recipe @Application $ val_ $ Bornet.Api.WholeServer.makeApplication <$> fmap Bornet.Api.Server.unwrap arg <*> arg,
-      recipe @RunnerConf $ ioEff_ $ wire $ JsonConf.lookupSection @RunnerConf "runner",
+      recipe @RunnerConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @RunnerConfig "runner",
+      recipe @Network.Wai.Handler.Warp.Runner.Settings $ val_ $ wire $ Network.Wai.Handler.Warp.Runner.makeSettings,
       recipe @Runner $
         Recipe
-          { bare = val_ $ wire makeRunner,
+          { bare = val_ $ wire $ Network.Wai.Handler.Warp.Runner.make,
             decos =
-              [ val_ $ wire $ \logger (conf :: RunnerConf) -> Network.Wai.Handler.Warp.Runner.decorate \action -> do
+              [ val_ $ wire $ \logger (conf :: RunnerConfig) -> Network.Wai.Handler.Warp.Runner.decorate \action -> do
                   logInfo "Server started" conf & runLogT "runner" logger defaultLogLevel
                   action
               ]

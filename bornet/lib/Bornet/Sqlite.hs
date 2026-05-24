@@ -29,7 +29,7 @@ data SqlitePoolConf = SqlitePoolConf
   deriving stock (Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-makeSqlitePool :: SqlitePoolConf -> PoolConf -> forall x. (SqlitePool -> IO x) -> IO x
+makeSqlitePool :: SqlitePoolConf -> PoolConfig -> forall x. (SqlitePool -> IO x) -> IO x
 makeSqlitePool
   SqlitePoolConf {databaseFile}
   poolConf =

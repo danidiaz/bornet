@@ -9,7 +9,7 @@ import Data.Aeson
 import Data.Proxy
 import GHC.Generics (Generic)
 import Bornet.Api
-import Network.Wai.Bean qualified
+import Network.Wai.Application qualified
 import Servant.API
 import Servant.Server
 import Servant.Server.StaticFiles
@@ -20,8 +20,8 @@ data StaticServeConf = StaticServeConf
   deriving stock (Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-makeApplication :: Server Api -> StaticServeConf -> Network.Wai.Bean.Application
-makeApplication server StaticServeConf {staticAssetsFolder} = Network.Wai.Bean.Application {Network.Wai.Bean.application}
+makeApplication :: Server Api -> StaticServeConf -> Network.Wai.Application.Application
+makeApplication server StaticServeConf {staticAssetsFolder} = Network.Wai.Application.MakeApplication {Network.Wai.Application.application}
   where
     staticAssetsServer = serveDirectoryWebApp staticAssetsFolder
     application :: Application

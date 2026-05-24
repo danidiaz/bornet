@@ -1,3 +1,5 @@
 packages:
     bornet
     dani-beans
+
+allow-newer: base
