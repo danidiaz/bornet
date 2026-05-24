@@ -50,7 +50,7 @@ library lib-sqlite
         language,
         base
     exposed-modules:
-        Bornet.Sqlite
+        Sqlite.Bean
     build-depends:
         aeson,
         text,

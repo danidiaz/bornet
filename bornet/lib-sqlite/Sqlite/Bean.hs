@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- | Allocating connections that might me used down the hierarchy of calls.
-module Bornet.Sqlite
+module Sqlite.Bean
   ( withConnection,
     hoistWithConnection,
     SqlitePoolConfig (..),
