@@ -44,7 +44,7 @@ executable bornet
     build-depends:    bornet
     hs-source-dirs:   app
 
-library lib-sqlite
+library sqlite
     import:
         options,
         language,
@@ -77,7 +77,7 @@ library
         Bornet.Api.Server.Htmx
         Bornet.Api.WholeServer
     build-depends:
-        bornet:lib-sqlite,
+        bornet:sqlite,
         cauldron >= 0.9.0.1,
         servant,
         servant-server,
