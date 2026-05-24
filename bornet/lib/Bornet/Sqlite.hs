@@ -7,7 +7,7 @@
 module Bornet.Sqlite
   ( withConnection,
     hoistWithConnection,
-    SqlitePoolConf (..),
+    SqlitePoolConfig (..),
     SqlitePool,
     makeSqlitePool,
   )
@@ -24,14 +24,14 @@ import ThreadLocal
 
 type SqlitePool = Pool Connection
 
-data SqlitePoolConf = SqlitePoolConf
+data SqlitePoolConfig = SqlitePoolConfig
   {databaseFile :: Text}
   deriving stock (Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-makeSqlitePool :: SqlitePoolConf -> PoolConfig -> forall x. (SqlitePool -> IO x) -> IO x
+makeSqlitePool :: SqlitePoolConfig -> PoolConfig -> forall x. (SqlitePool -> IO x) -> IO x
 makeSqlitePool
-  SqlitePoolConf {databaseFile}
+  SqlitePoolConfig {databaseFile}
   poolConf =
     do
       Data.Pool.Introspection.Bean.make (Sqlite.openV2NoMutexReadWrite databaseFile) Sqlite.close poolConf

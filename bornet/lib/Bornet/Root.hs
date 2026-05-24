@@ -41,7 +41,7 @@ cauldron =
     [ let makeJsonConfig = JsonConfig.YamlFile.make $ JsonConfig.YamlFile.loadYamlSettings ["conf.yaml"] [] JsonConfig.YamlFile.useEnv
        in recipe @JsonConfig $ ioEff_ $ pure makeJsonConfig,
       recipe @Logger $ eff_ $ pure $ managed withStdOutLogger,
-      recipe @SqlitePoolConf $ ioEff_ $ wire $ JsonConfig.lookupSection @SqlitePoolConf "sqlite",
+      recipe @SqlitePoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @SqlitePoolConfig "sqlite",
       recipe @PoolConfig $ ioEff_ $ wire $ JsonConfig.lookupSection @PoolConfig "sqlite",
       recipe @SqlitePool $ eff_ $ wire $ \sconf pconf -> managed $ Bornet.Sqlite.makeSqlitePool sconf pconf,
       recipe @(ThreadLocal Connection) $ ioEff_ $ pure makeThreadLocal,
